@@ -38,6 +38,14 @@ function TodoForm({ addTodo }) {
   );
 }
 
+function Counts({ incomplete, complete }) {
+  return (
+    <div>
+      Incomplete: {incomplete} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Completed: {complete}
+    </div>
+  );
+}
+
 function App() {
   const [todos, setTodos] = React.useState([
     {
@@ -54,21 +62,37 @@ function App() {
     }
   ]);
 
+  const [counts, setCounts] = React.useState([3, 0]);
+
+  function updateCounts(incomplete, complete) {
+    const newCounts = [...counts];
+    newCounts[0] += incomplete;
+    newCounts[1] += complete;
+    setCounts(newCounts);
+  }
+
   const addTodo = text => {
     const newTodos = [...todos, { text }];
     setTodos(newTodos);
+    updateCounts(1, 0);
   };
 
   const completeTodo = index => {
     const newTodos = [...todos];
     newTodos[index].isCompleted = true;
     setTodos(newTodos);
+    updateCounts(-1, 1);
   };
 
   const removeTodo = index => {
     const newTodos = [...todos];
     newTodos.splice(index, 1);
     setTodos(newTodos);
+    if (todos[index].isCompleted) {
+      updateCounts(0, -1);
+    } else {
+      updateCounts(-1, 0);
+    }
   };
 
   return (
@@ -85,6 +109,7 @@ function App() {
         ))}
         <TodoForm addTodo={addTodo} />
       </div>
+      <Counts incomplete={counts[0]} complete={counts[1]} />
     </div>
   );
 }
